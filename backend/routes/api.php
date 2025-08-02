@@ -1,20 +1,36 @@
 <?php
-
-use Illuminate\Http\Request;
+use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
+// =============== Public Auth Routes =========================
 
-
-// Post Route for Registering User
+// Register a new user
 Route::post('/register', [AuthController::class, 'register']);
-// Post Route for Login User
+
+// Login a user and return token
 Route::post('/login', [AuthController::class, 'login']);
 
-// Checked using sanctum user is logged in or not
+// =============== Protected Routes (Require Auth) =========================
+
 Route::middleware('auth:sanctum')->group(function () {
-    // Route for getting profile
+    // Get logged-in user's profile
     Route::get('/me', [AuthController::class, 'me']);
-    // Route for Logout user
+
+    // Logout the user
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // =============== Ticket Routes =========================
+
+    // Get all tickets (filtered based on role and query)
+    Route::get('/tickets', [TicketController::class, 'index']);
+
+    // Create a new ticket
+    Route::post('/tickets', [TicketController::class, 'store']);
+
+    // View a specific ticket (with role-based access control)
+    Route::get('/tickets/{ticket}', [TicketController::class, 'show']);
+
+    // Update status of a ticket (only agent/admin)
+    Route::patch('/tickets/{ticket}/status', [TicketController::class, 'updateStatus']);
 });
