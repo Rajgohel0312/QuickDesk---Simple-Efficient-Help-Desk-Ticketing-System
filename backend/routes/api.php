@@ -1,47 +1,64 @@
 <?php
+
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\CategoryPublicController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-// =============== Public Auth Routes =========================
+// ======================= Public Auth Routes =======================
 
-// Register a new user
+// User Registration
 Route::post('/register', [AuthController::class, 'register']);
 
-// Login a user and return token
+// User Login - returns token on success
 Route::post('/login', [AuthController::class, 'login']);
 
-// =============== Protected Routes (Require Auth) =========================
+// Public Route - Get all categories (for ticket creation)
+Route::get('/categories', [CategoryPublicController::class, 'index']);
+
+
+// ======================= Protected Routes =======================
+// All routes inside this group require a valid auth token via Sanctum
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Get logged-in user's profile
+
+    // Get the authenticated user's details
     Route::get('/me', [AuthController::class, 'me']);
 
     // Logout the user
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // =============== Ticket Routes =========================
+    // =================== Ticket Routes ===================
 
-    // Get all tickets (filtered based on role and query)
+    // Get all tickets (visible based on user role)
     Route::get('/tickets', [TicketController::class, 'index']);
 
     // Create a new ticket
     Route::post('/tickets', [TicketController::class, 'store']);
 
-    // View a specific ticket (with role-based access control)
+    // Get a single ticket by ID (only owner, agent, or admin)
     Route::get('/tickets/{ticket}', [TicketController::class, 'show']);
 
-    // Update status of a ticket (only agent/admin)
+    // Update ticket status (only by agent or admin)
     Route::patch('/tickets/{ticket}/status', [TicketController::class, 'updateStatus']);
 
-    // =============== Comment Routes =========================
+    // =================== Comment Routes ===================
 
-    // Get all comments for a specific ticket
+    // Get all comments for a ticket
     Route::get('/tickets/{ticketId}/comments', [CommentController::class, 'index']);
 
-    // Add a comment to a specific ticket
+    // Add a comment to a ticket
     Route::post('/tickets/{ticketId}/comments', [CommentController::class, 'store']);
 });
 
 
+// ======================= Admin Routes =======================
+// Only accessible to authenticated users with 'admin' middleware
+
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+
+    // RESTful API routes for category management (CRUD)
+    Route::apiResource('categories', CategoryController::class);
+});
