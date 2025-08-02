@@ -51,7 +51,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Add a comment to a ticket
     Route::post('/tickets/{ticketId}/comments', [CommentController::class, 'store']);
+
+
 });
+Route::middleware('auth:sanctum')->put('/tickets/{id}', [TicketController::class, 'update']);
 
 
 // ======================= Admin Routes =======================

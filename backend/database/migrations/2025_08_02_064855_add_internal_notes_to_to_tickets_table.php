@@ -15,7 +15,7 @@ return new class extends Migration {
                 $table->unsignedBigInteger('internal_notes')->nullable()->after('user_id');
 
                 $table->foreign('internal_notes')
-                    ->references('id')
+                    ->references('text')
                     ->on('users')
                     ->onDelete('set null');
             });

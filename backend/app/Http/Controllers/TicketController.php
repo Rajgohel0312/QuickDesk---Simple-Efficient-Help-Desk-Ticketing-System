@@ -89,6 +89,27 @@ class TicketController extends Controller
      * - Only agents or admins are allowed to change status.
      * - Accepts statuses: open, in_progress, resolved, closed.
      */
+    public function update(Request $request, $id)
+    {
+        $ticket = Ticket::findOrFail($id);
+
+        // Allow only the ticket owner or admin/agent to update
+        if ($request->user()->role === 'user' && $ticket->user_id !== $request->user()->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'category_id' => 'nullable|exists:categories,id',
+            'title' => 'nullable|string',
+            'description' => 'nullable|string',
+            'status' => 'nullable|string|in:open,in_progress,resolved,closed',
+        ]);
+
+        $ticket->update($validated);
+
+        return response()->json(['message' => 'Ticket updated successfully', 'ticket' => $ticket]);
+    }
+
     public function updateStatus(Request $request, Ticket $ticket)
     {
         // Only agents or admins can update ticket status
