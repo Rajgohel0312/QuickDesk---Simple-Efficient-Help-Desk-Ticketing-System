@@ -16,6 +16,8 @@ class Ticket extends Model
         'status',
         'category_id',
         'attachment',
+        'priority',
+        'assigned_to',
     ];
 
     public function user()
@@ -27,7 +29,11 @@ class Ticket extends Model
         return $this->hasMany(Comment::class)->latest();
     }
     public function assignedAgent()
-{
-    return $this->belongsTo(User::class, 'assigned_to');
-}
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

@@ -22,7 +22,9 @@ class TicketController extends Controller
         if ($request->user()->role == 'user') {
             $query->where('user_id', $request->user()->id);
         }
-
+        if ($request->has('priority')) {
+            $query->where('priority', $request->priority);
+        }
         // Filter by ticket status if provided
         if ($request->has('status')) {
             $query->where('status', $request->status);
@@ -93,22 +95,29 @@ class TicketController extends Controller
     {
         $ticket = Ticket::findOrFail($id);
 
-        // Allow only the ticket owner or admin/agent to update
+        // ✅ Only allow ticket owner or agent/admin
         if ($request->user()->role === 'user' && $ticket->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // ✅ Validation (now includes 'priority')
         $validated = $request->validate([
             'category_id' => 'nullable|exists:categories,id',
-            'title' => 'nullable|string',
+            'title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'status' => 'nullable|string|in:open,in_progress,resolved,closed',
+            'priority' => 'nullable|in:Low,Medium,High,Critical',
         ]);
 
+        // ✅ Update all fields, including priority
         $ticket->update($validated);
 
-        return response()->json(['message' => 'Ticket updated successfully', 'ticket' => $ticket]);
+        return response()->json([
+            'message' => 'Ticket updated successfully',
+            'ticket' => $ticket
+        ]);
     }
+
 
     public function updateStatus(Request $request, Ticket $ticket)
     {
