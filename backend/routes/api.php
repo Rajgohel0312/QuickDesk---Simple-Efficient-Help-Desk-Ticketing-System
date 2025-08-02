@@ -62,3 +62,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     // RESTful API routes for category management (CRUD)
     Route::apiResource('categories', CategoryController::class);
 });
+
+Route::middleware(['auth:sanctum', 'role:admin,agent'])->group(function () {
+    Route::post('/tickets/{ticket}/update-status', [TicketController::class, 'assignOrUpdate']);
+});

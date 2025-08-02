@@ -26,4 +26,8 @@ class Ticket extends Model
     {
         return $this->hasMany(Comment::class)->latest();
     }
+    public function assignedAgent()
+{
+    return $this->belongsTo(User::class, 'assigned_to');
+}
 }

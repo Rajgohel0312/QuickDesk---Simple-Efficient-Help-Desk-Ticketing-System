@@ -107,4 +107,30 @@ class TicketController extends Controller
 
         return response()->json(['message' => 'Status updated', 'ticket' => $ticket]);
     }
+
+    public function assignOrUpdate(Request $request, Ticket $ticket)
+    {
+        $request->validate([
+            'status' => 'nullable|in:open,in_progress,resolved,closed',
+            'assigned_to' => 'nullable|exists:users,id',
+            'internal_notes' => 'nullable|string',
+        ]);
+
+        if ($request->has('status')) {
+            $ticket->status = $request->status;
+        }
+
+        if ($request->has('assigned_to')) {
+            $ticket->assigned_to = $request->assigned_to;
+        }
+
+        if ($request->has('internal_notes')) {
+            $ticket->internal_notes = $request->internal_notes;
+        }
+
+        $ticket->save();
+
+        return response()->json(['message' => 'Ticket updated successfully.', 'ticket' => $ticket]);
+    }
+
 }
