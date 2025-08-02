@@ -9,7 +9,7 @@ class Ticket extends Model
 {
     use HasFactory;
 
-     protected $fillable = [
+    protected $fillable = [
         'user_id',
         'subject',
         'description',
@@ -18,7 +18,12 @@ class Ticket extends Model
         'attachment',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->latest();
     }
 }

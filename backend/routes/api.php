@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -33,4 +34,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Update status of a ticket (only agent/admin)
     Route::patch('/tickets/{ticket}/status', [TicketController::class, 'updateStatus']);
+
+    // =============== Comment Routes =========================
+
+    // Get all comments for a specific ticket
+    Route::get('/tickets/{ticketId}/comments', [CommentController::class, 'index']);
+
+    // Add a comment to a specific ticket
+    Route::post('/tickets/{ticketId}/comments', [CommentController::class, 'store']);
 });
+
+
