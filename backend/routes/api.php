@@ -11,6 +11,8 @@ use App\Http\Controllers\AuthController;
 
 // User Registration
 Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('auth:sanctum')->post('/attachments/upload', [TicketController::class, 'uploadAttachment']);
+
 
 // User Login - returns token on success
 Route::post('/login', [AuthController::class, 'login']);
