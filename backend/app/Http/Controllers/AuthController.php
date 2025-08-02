@@ -65,4 +65,9 @@ class AuthController extends Controller
     {
         return response()->json($request->user());
     }
+    public function getAgents()
+    {
+        $agents = User::where('role', 'agent')->select('id', 'name', 'email')->get();
+        return response()->json($agents);
+    }
 }

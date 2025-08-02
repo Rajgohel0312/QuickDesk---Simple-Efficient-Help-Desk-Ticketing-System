@@ -71,3 +71,5 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 Route::middleware(['auth:sanctum', 'role:admin,agent'])->group(function () {
     Route::post('/tickets/{ticket}/update-status', [TicketController::class, 'assignOrUpdate']);
 });
+
+Route::middleware('auth:sanctum')->get('/agents', [AuthController::class, 'getAgents']);
